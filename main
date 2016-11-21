@@ -1,0 +1,111 @@
+void setup() {
+  // put your setup code here, to run once:
+
+  // TESTING BEGIN
+  //Serial.begin(9600);
+
+  // TESTING ENDE
+  //SensorShield Pin) aktivieren
+  //Pin  4 für Trigger und Pin 4 für Empfang (ECHO)
+  pinMode(4, OUTPUT);
+  pinMode(5, INPUT);
+
+  //Motorshield Pin (Steuerung) aktivieren
+
+  //Channel A
+  pinMode(12, OUTPUT);
+  pinMode(9, OUTPUT);
+
+  //Channel B
+  pinMode(13, OUTPUT);
+  pinMode(8, OUTPUT);
+}
+
+
+//Funktion Vorwährtsfahren Geradeaus
+void vorwaehrtsfahren()
+{
+  //Vorwährts fahren
+  //Channel A
+  digitalWrite(12, HIGH); //Gas geben
+  digitalWrite(9, LOW); //Bremse aus
+  analogWrite(3, 180); //halbe Geschwindigkeit
+  //Serial.println("vorwaehrtsfahren");
+  //Serial.println(analogRead(A0)); // Aktueller Stromverbrauch
+
+
+  //Channel B
+  digitalWrite(13, HIGH); //Gas geben
+  digitalWrite(8, LOW); //Bremse aus
+  analogWrite(11, 180); //halbe Geschwindigkeit
+  //Serial.println(analogRead(A1)); // Aktueller Stromverbrauch
+  //Serial.println("**********************");
+  delay(5);
+}
+
+
+//Funkion Linkskurve Räder drehen sich zwei Sekunden entgegengesetzt.
+void linkskurve()
+
+{
+  digitalWrite(9, HIGH); //Bremse an
+  digitalWrite(8, HIGH); // Bremse an
+  delay(5000);
+
+  //Channel A
+  digitalWrite(12, LOW); //Rückwärts
+  digitalWrite(9, LOW); // Bremse aus
+  analogWrite(3, 123); //halbe Geschwindigkeit
+
+  //Channel B
+  digitalWrite(13, HIGH); //Gas geben
+  digitalWrite(8, LOW); //Bremse aus
+  analogWrite(11, 123); //halbe Geschwindigkeit
+  delay(2000); //für eine sekunde drehen
+  //Stehenbleiben
+  digitalWrite(8, HIGH); // Bremse an
+  digitalWrite(9, HIGH); // Bremse an
+
+  //Serial.println("Linkskurve");
+}
+
+
+//Funktion Sensor Messung mit Rückgabe der Messung in cm
+int sensor()
+{
+  long laenge = 0;
+  int cm = 0;
+
+  //Sensor Entfernung Messen
+  digitalWrite(4, LOW);
+  delayMicroseconds(2);
+  digitalWrite(4, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(4, LOW);
+
+  laenge = pulseIn(5, HIGH);
+
+  //Umrechnen in cm
+  cm = (laenge * 34) / 2000; //Umrechnung des Impulses in cm
+
+  //Serial.println(cm);
+
+  return cm;
+}
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  // Variablen
+  int sensormessung = 0;
+
+  sensormessung = sensor();
+
+  if (sensormessung < 20)
+  {
+    linkskurve();
+  }
+  else
+  {
+    vorwaehrtsfahren();
+  }
+}
